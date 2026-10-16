@@ -1,0 +1,13 @@
+# 临时文本和编译器日志，不是作业内容
+_pdf_extract.txt
+cc1_*.txt
+gcc_err.txt
+gcc_out.txt
+gcc_out2.txt
+gcc_stderr.txt
+gcc_stdout.txt
+gcc_try.txt
+gcc_ver.txt
+gcc_verbose.txt
+vswhere.json
+新建 文本文档.txt
