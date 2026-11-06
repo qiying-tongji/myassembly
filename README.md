@@ -8,5 +8,6 @@
 | `homework-2` | LOOP、条件跳转，以及 C 语言对照汇编 | 汇编语言第二次作业.pdf |
 | `homework-3` | 十六进制与十进制转换，以及 1 到 100 求和 | 汇编语言第三次作业.pdf |
 | `homework-4` | 倒三角九九乘法表 | 汇编语言第四次作业.pdf |
+| `homework-5` | 斐波那契数列 | 汇编语言第五次作业.pdf |
 
 DOSBox、MASM 和 debug 在 `homework-1`。后面几次作业沿用这套环境。
