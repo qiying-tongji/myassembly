@@ -1,0 +1,331 @@
+Microsoft (R) Macro Assembler Version 5.00                  11/13/26 19:56:21
+                                                             Page     1-1
+
+
+				 
+				; =============================================
+				===== 
+				; Jump Demonstration 
+				; MASM 5.0 / 8086 
+				; 
+				; 1. SHORT JMP 
+				; 2. NEAR JMP 
+				; 3. Conditional SHORT JMP 
+				; 4. FAR JMP 
+				; 5. Conditional FAR JMP workaround 
+				; =============================================
+				===== 
+				 
+				 
+				; =============================================
+				===== 
+				; DATA SEGMENT 
+				; =============================================
+				===== 
+				 
+ 0000				DATA SEGMENT 
+				 
+ 0000  4A 75 6D 70 20 44 65	    titleMsg DB 'Jump Demonstration',0DH,0AH,'$
+				' 
+       6D 6F 6E 73 74 72 61	
+       74 69 6F 6E 0D 0A 24	
+				 
+ 0015  53 48 4F 52 54 20 4A	    shortMsg DB 'SHORT JMP: OK',0DH,0AH,'$' 
+       4D 50 3A 20 4F 4B 0D	
+       0A 24			
+				 
+ 0025  4E 45 41 52 20 4A 4D	    nearMsg  DB 'NEAR JMP: OK',0DH,0AH,'$' 
+       50 3A 20 4F 4B 0D 0A	
+       24			
+				 
+ 0034  43 4F 4E 44 49 54 49	    condMsg  DB 'CONDITIONAL SHORT JMP: OK',0DH
+				,0AH,'$' 
+       4F 4E 41 4C 20 53 48	
+       4F 52 54 20 4A 4D 50	
+       3A 20 4F 4B 0D 0A 24	
+				 
+ 0050  43 6F 6E 64 69 74 69	    skipMsg  DB 'Condition false: FAR JMP skipp
+				ed',0DH,0AH,'$' 
+       6F 6E 20 66 61 6C 73	
+       65 3A 20 46 41 52 20	
+       4A 4D 50 20 73 6B 69	
+       70 70 65 64 0D 0A 24	
+				 
+ 0073  46 41 52 20 4A 4D 50	    farMsg   DB 'FAR JMP: OK',0DH,0AH,'$' 
+       3A 20 4F 4B 0D 0A 24	
+				 
+ 0081  45 52 52 4F 52 3A 20	    errorMsg DB 'ERROR: Unexpected execution',0
+				DH,0AH,'$' 
+Microsoft (R) Macro Assembler Version 5.00                  11/13/26 19:56:21
+                                                             Page     1-2
+
+
+       55 6E 65 78 70 65 63	
+       74 65 64 20 65 78 65	
+       63 75 74 69 6F 6E 0D	
+       0A 24			
+				 
+ 009F				DATA ENDS 
+				 
+				 
+				; =============================================
+				===== 
+				; STACK SEGMENT 
+				; =============================================
+				===== 
+				 
+ 0000				STACKSEG SEGMENT PARA STACK 'STACK' 
+				 
+ 0000  0080[			    DW 128 DUP(?) 
+	   ????			
+			 ]	
+				
+				 
+ 0100				STACKSEG ENDS 
+				 
+				 
+				; =============================================
+				===== 
+				; MAIN CODE SEGMENT 
+				; =============================================
+				===== 
+				 
+ 0000				MAINCODE SEGMENT PARA PUBLIC 'CODE' 
+				 
+				ASSUME CS:MAINCODE, DS:DATA, SS:STACKSEG 
+				 
+				 
+ 0000				START: 
+				 
+				    ; Initialize data segment 
+ 0000  B8 ---- R		    MOV AX, DATA 
+ 0003  8E D8			    MOV DS, AX 
+				 
+				 
+				; =============================================
+				===== 
+				; Display title 
+				; =============================================
+				===== 
+				 
+ 0005  B4 09			    MOV AH, 09H 
+ 0007  8D 16 0000 R		    LEA DX, titleMsg 
+ 000B  CD 21			    INT 21H 
+				 
+				 
+				; =============================================
+Microsoft (R) Macro Assembler Version 5.00                  11/13/26 19:56:21
+                                                             Page     1-3
+
+
+				===== 
+				; TEST 1: SHORT JMP 
+				; =============================================
+				===== 
+				 
+ 000D  EB 08			    JMP SHORT SHORT_TARGET 
+				 
+				    ; This code should be skipped 
+ 000F  B4 09			    MOV AH, 09H 
+ 0011  8D 16 0081 R		    LEA DX, errorMsg 
+ 0015  CD 21			    INT 21H 
+				 
+				 
+ 0017				SHORT_TARGET: 
+				 
+ 0017  B4 09			    MOV AH, 09H 
+ 0019  8D 16 0015 R		    LEA DX, shortMsg 
+ 001D  CD 21			    INT 21H 
+				 
+				 
+				; =============================================
+				===== 
+				; TEST 2: NEAR JMP 
+				; =============================================
+				===== 
+				 
+ 001F  EB 09 90			    JMP NEAR PTR NEAR_TARGET 
+				 
+				    ; This code should be skipped 
+ 0022  B4 09			    MOV AH, 09H 
+ 0024  8D 16 0081 R		    LEA DX, errorMsg 
+ 0028  CD 21			    INT 21H 
+				 
+				 
+ 002A				NEAR_TARGET: 
+				 
+ 002A  B4 09			    MOV AH, 09H 
+ 002C  8D 16 0025 R		    LEA DX, nearMsg 
+ 0030  CD 21			    INT 21H 
+				 
+				 
+				; =============================================
+				===== 
+				; TEST 3: CONDITIONAL SHORT JMP 
+				; =============================================
+				===== 
+				 
+ 0032  B8 0001			    MOV AX, 1 
+				 
+ 0035  3D 0001			    CMP AX, 1 
+				 
+ 0038  74 08			    JE SHORT COND_TARGET 
+				 
+				    ; This code should be skipped 
+Microsoft (R) Macro Assembler Version 5.00                  11/13/26 19:56:21
+                                                             Page     1-4
+
+
+ 003A  B4 09			    MOV AH, 09H 
+ 003C  8D 16 0081 R		    LEA DX, errorMsg 
+ 0040  CD 21			    INT 21H 
+				 
+				 
+ 0042				COND_TARGET: 
+				 
+ 0042  B4 09			    MOV AH, 09H 
+ 0044  8D 16 0034 R		    LEA DX, condMsg 
+ 0048  CD 21			    INT 21H 
+				 
+				 
+				; =============================================
+				===== 
+				; TEST 4: 
+				; Conditional jump to a far destination 
+				; 
+				; 8086 conditional jumps only support SHORT. 
+				; We use the opposite condition to skip FAR JMP
+				. 
+				; =============================================
+				===== 
+				 
+ 004A  B8 0000			    MOV AX, 0 
+				 
+ 004D  3D 0001			    CMP AX, 1 
+				 
+ 0050  75 05			    JNE SHORT FAR_COND_SKIP 
+				 
+				    ; If AX equals 1, jump to another segment 
+ 0052  EA 0000 ---- R		    JMP FAR PTR FAR_TARGET 
+				 
+				 
+ 0057				FAR_COND_SKIP: 
+				 
+				    ; AX is not equal to 1 
+ 0057  B4 09			    MOV AH, 09H 
+ 0059  8D 16 0050 R		    LEA DX, skipMsg 
+ 005D  CD 21			    INT 21H 
+				 
+				 
+				    ; Now make the condition true 
+ 005F  B8 0001			    MOV AX, 1 
+				 
+ 0062  3D 0001			    CMP AX, 1 
+				 
+ 0065  75 05			    JNE SHORT FAR_COND_END 
+				 
+ 0067  EA 0000 ---- R		    JMP FAR PTR FAR_TARGET 
+				 
+				 
+ 006C				FAR_COND_END: 
+				 
+ 006C  B4 09			    MOV AH, 09H 
+Microsoft (R) Macro Assembler Version 5.00                  11/13/26 19:56:21
+                                                             Page     1-5
+
+
+ 006E  8D 16 0081 R		    LEA DX, errorMsg 
+ 0072  CD 21			    INT 21H 
+				 
+				 
+				    ; Exit if unexpected path is reached 
+ 0074  B8 4C00			    MOV AX, 4C00H 
+ 0077  CD 21			    INT 21H 
+				 
+				 
+ 0079				MAINCODE ENDS 
+				 
+				 
+				; =============================================
+				===== 
+				; CALENDAR CODE SEGMENT 
+				; =============================================
+				===== 
+				 
+ 0000				CALCODE SEGMENT PARA PUBLIC 'CODE' 
+				 
+				ASSUME CS:CALCODE, DS:DATA 
+				 
+				 
+				; =============================================
+				===== 
+				; TEST 5: FAR JMP TARGET 
+				; =============================================
+				===== 
+				 
+ 0000				FAR_TARGET: 
+				 
+ 0000  B4 09			    MOV AH, 09H 
+				 
+ 0002  8D 16 0073 R		    LEA DX, farMsg 
+				 
+ 0006  CD 21			    INT 21H 
+				 
+				 
+				    ; Terminate program 
+ 0008  B8 4C00			    MOV AX, 4C00H 
+ 000B  CD 21			    INT 21H 
+				 
+				 
+ 000D				CALCODE ENDS 
+				 
+				 
+				END START 
+Microsoft (R) Macro Assembler Version 5.00                  11/13/26 19:56:21
+                                                             Symbols-1
+
+
+Segments and Groups:
+
+                N a m e         	Length	 Align	Combine Class
+
+CALCODE  . . . . . . . . . . . .  	000D	PARA	PUBLIC	'CODE'
+DATA . . . . . . . . . . . . . .  	009F	PARA	NONE	
+MAINCODE . . . . . . . . . . . .  	0079	PARA	PUBLIC	'CODE'
+STACKSEG . . . . . . . . . . . .  	0100	PARA	STACK	'STACK'
+
+Symbols:            
+
+                N a m e         	Type	 Value	 Attr
+
+CONDMSG  . . . . . . . . . . . .  	L BYTE	0034	DATA
+COND_TARGET  . . . . . . . . . .  	L NEAR	0042	MAINCODE
+
+ERRORMSG . . . . . . . . . . . .  	L BYTE	0081	DATA
+
+FARMSG . . . . . . . . . . . . .  	L BYTE	0073	DATA
+FAR_COND_END . . . . . . . . . .  	L NEAR	006C	MAINCODE
+FAR_COND_SKIP  . . . . . . . . .  	L NEAR	0057	MAINCODE
+FAR_TARGET . . . . . . . . . . .  	L NEAR	0000	CALCODE
+
+NEARMSG  . . . . . . . . . . . .  	L BYTE	0025	DATA
+NEAR_TARGET  . . . . . . . . . .  	L NEAR	002A	MAINCODE
+
+SHORTMSG . . . . . . . . . . . .  	L BYTE	0015	DATA
+SHORT_TARGET . . . . . . . . . .  	L NEAR	0017	MAINCODE
+SKIPMSG  . . . . . . . . . . . .  	L BYTE	0050	DATA
+START  . . . . . . . . . . . . .  	L NEAR	0000	MAINCODE
+
+TITLEMSG . . . . . . . . . . . .  	L BYTE	0000	DATA
+
+@FILENAME  . . . . . . . . . . .  	TEXT  jumpdemo		
+
+
+    215 Source  Lines
+    215 Total   Lines
+     22 Symbols
+
+  51146 + 465398 Bytes symbol space free
+
+      0 Warning Errors
+      0 Severe  Errors
