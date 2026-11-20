@@ -1,0 +1,9 @@
+
+ Start  Stop   Length Name                   Class
+ 00000H 000FFH 00100H DATA                   DATA
+ 00100H 001FFH 00100H STACKSEG               STACK
+ 00200H 002F6H 000F7H MAINCODE               CODE
+ 00300H 0038CH 0008DH CALCODE                CODE
+ 00390H 004D7H 00148H PRINTCODE              CODE
+
+Program entry point at 0020:0000
